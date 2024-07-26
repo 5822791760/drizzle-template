@@ -1,9 +1,9 @@
 import { TestingModule } from '@nestjs/testing';
 import { UsersUsecaseRepo } from '@app/modules/users/usecase/users.usecase.repo';
-import { createRepoTestingModule } from '@testcore/utils/repo-test-modules';
+import { createRepoTestingModule } from '@testcore/utils/test-modules';
 import { TestDrizzleService } from '@testcore/utils/test-drizzle.service';
 import { USERS } from '@drizzle/schema';
-import { UsersFactory } from '../users.factory';
+import { CreateUsersFactory } from '../users.factory';
 
 describe('UsersUsecaseRepo', () => {
   let repo: UsersUsecaseRepo;
@@ -37,7 +37,7 @@ describe('UsersUsecaseRepo', () => {
     });
 
     it('should return users', async () => {
-      const testUser = UsersFactory.build({ name: 'bob' });
+      const testUser = CreateUsersFactory.build({ name: 'bob' });
       await service.insert(USERS, testUser);
       users = await repo.findAll();
 
@@ -59,7 +59,7 @@ describe('UsersUsecaseRepo', () => {
     });
 
     it('should return user', async () => {
-      const testUser = UsersFactory.build({ name: 'bob' });
+      const testUser = CreateUsersFactory.build({ name: 'bob' });
       const [id] = await service.insert(USERS, testUser);
       user = await repo.findOne(id);
 
