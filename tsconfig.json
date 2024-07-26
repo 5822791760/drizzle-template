@@ -22,7 +22,7 @@
         "src/*"
       ],
       "@core/*": [
-        "core/*"
+        "src/core/*"
       ],
       "@drizzle/*": [
         "src/modules/drizzle/*"

@@ -1,5 +1,5 @@
 import { Test } from '@nestjs/testing';
-import { InjectionToken, Provider } from '@nestjs/common';
+import { InjectionToken, Provider, Type } from '@nestjs/common';
 import { DRIZZLE_ORM } from '@app/core/constants/db.constants';
 import { TestDrizzleService } from './test-drizzle.service';
 
@@ -42,4 +42,25 @@ export async function createServiceTestingModule<T>(
       },
     ],
   }).compile();
+}
+
+export async function createControllerTestingModule<T>(
+  controller: Type<any>,
+  token: InjectionToken,
+  mockUsecase: T,
+) {
+  const module = await Test.createTestingModule({
+    controllers: [controller],
+    providers: [
+      {
+        provide: token,
+        useValue: mockUsecase,
+      },
+    ],
+  }).compile();
+
+  const nestApp = module.createNestApplication();
+  await nestApp.init();
+
+  return { module, nestApp };
 }

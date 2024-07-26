@@ -26,7 +26,7 @@ export class TestDrizzleService {
     return this._drizzle;
   }
 
-  async end() {
+  async close() {
     if (this.client) {
       this.client.release();
     }

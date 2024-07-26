@@ -1,5 +1,5 @@
 import { Module, Provider } from '@nestjs/common';
-import { UsersController } from './users.controller';
+import { UsersHttpController } from './controller/users.http.controller';
 import { UsersService } from './service/users.service';
 import { UsersUsecaseRepo } from './usecase/users.usecase.repo';
 import { UsersUsecase } from './usecase/users.usecase';
@@ -10,7 +10,7 @@ const usecase: ReadonlyArray<Provider> = [UsersUsecaseRepo, UsersUsecase];
 const service: ReadonlyArray<Provider> = [UsersServiceRepo, UsersService];
 
 @Module({
-  controllers: [UsersController],
+  controllers: [UsersHttpController],
   imports: [],
   providers: [...usecase, ...service],
   exports: [UsersService],

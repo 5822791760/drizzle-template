@@ -6,6 +6,7 @@ export const CreateUsersFactory = Factory.Sync.makeFactory<
   typeof USERS.$inferInsert
 >({
   name: faker.person.fullName(),
+  cityId: null,
 });
 
 export const UsersFactory = Factory.Sync.makeFactory<typeof USERS.$inferSelect>(

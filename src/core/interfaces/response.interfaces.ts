@@ -20,3 +20,5 @@ export interface IResponsePagingPagination {
   totalPage: number;
   total: number;
 }
+
+export type Single<T> = T extends Array<infer U> ? U : T;

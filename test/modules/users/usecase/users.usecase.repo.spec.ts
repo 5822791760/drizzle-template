@@ -2,13 +2,10 @@ import { TestingModule } from '@nestjs/testing';
 import { UsersUsecaseRepo } from '@app/modules/users/usecase/users.usecase.repo';
 import { createRepoTestingModule } from '@testcore/utils/test-modules';
 import { TestDrizzleService } from '@testcore/utils/test-drizzle.service';
-import { USERS } from '@drizzle/schema';
+import { CITIES, USERS } from '@drizzle/schema';
 import { CreateUsersFactory } from '../users.factory';
-import {
-  UsersUsecaseRepoFindAll,
-  UsersUsecaseRepoFindOne,
-} from '../../../../src/modules/users/usecase/users.usecase.type';
-import { UserNotFoundError } from '../../../../src/modules/users/users.error';
+import { UserNotFoundError } from '@app/modules/users/users.error';
+import { CreateCityFactory } from '../../cities/cities.factory';
 
 describe('UsersUsecaseRepo', () => {
   let repo: UsersUsecaseRepo;
@@ -23,17 +20,13 @@ describe('UsersUsecaseRepo', () => {
   });
 
   afterAll(async () => {
-    await service.end();
+    await service.close();
   });
 
   describe('findAll', () => {
-    let res: UsersUsecaseRepoFindAll;
+    it('should be an array', async () => {
+      const res = await repo.findAll();
 
-    beforeEach(async () => {
-      res = await repo.findAll();
-    });
-
-    it('should be an array', () => {
       expect(res.isErr()).toEqual(false);
       expect(res.isOk()).toEqual(true);
 
@@ -43,6 +36,8 @@ describe('UsersUsecaseRepo', () => {
     });
 
     it('should be empty when no user', async () => {
+      const res = await repo.findAll();
+
       expect(res.isErr()).toEqual(false);
       expect(res.isOk()).toEqual(true);
 
@@ -54,7 +49,8 @@ describe('UsersUsecaseRepo', () => {
       const testUser = CreateUsersFactory.build({ name: 'bob' });
       await service.insert(USERS, testUser);
 
-      res = await repo.findAll();
+      const res = await repo.findAll();
+
       expect(res.isErr()).toEqual(false);
       expect(res.isOk()).toEqual(true);
 
@@ -66,22 +62,19 @@ describe('UsersUsecaseRepo', () => {
   });
 
   describe('findOne', () => {
-    let res: UsersUsecaseRepoFindOne;
-
-    beforeEach(async () => {
-      res = await repo.findOne(1);
-    });
-
-    it('should error when no user', () => {
+    it('should error when no user', async () => {
+      const res = await repo.findOne(1);
       expect(res.isErr()).toEqual(true);
       expect(res.unwrapErr()).toBeInstanceOf(UserNotFoundError);
     });
 
     it('should return user', async () => {
-      const testUser = CreateUsersFactory.build({ name: 'bob' });
+      const testCity = CreateCityFactory.build();
+      const [cityId] = await service.insert(CITIES, testCity);
+      const testUser = CreateUsersFactory.build({ cityId });
       const [id] = await service.insert(USERS, testUser);
 
-      res = await repo.findOne(id);
+      const res = await repo.findOne(id);
 
       expect(res.isErr()).toEqual(false);
       expect(res.isOk()).toEqual(true);
