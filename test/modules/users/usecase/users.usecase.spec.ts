@@ -3,13 +3,19 @@ import { TestingModule } from '@nestjs/testing';
 import { createServiceTestingModule } from '@testcore/utils/test-modules';
 import { UsersUsecaseRepo } from '../../../../src/modules/users/usecase/users.usecase.repo';
 import { UsersFactory } from '../users.factory';
+import { Err, Ok } from 'oxide.ts';
+import { UserNotFoundError } from '../../../../src/modules/users/users.error';
+import {
+  UsersUsecaseRepoFindAll,
+  UsersUsecaseRepoFindOne,
+} from '../../../../src/modules/users/usecase/users.usecase.type';
 
 const mockUsers = UsersFactory.buildList(2);
 const mockUser = UsersFactory.build();
 
 const mockUsersUsecaseRepo = {
-  findAll: jest.fn().mockResolvedValue(mockUsers),
-  findOne: jest.fn().mockResolvedValue(mockUser),
+  findAll: jest.fn().mockResolvedValue(Ok(mockUsers)),
+  findOne: jest.fn().mockResolvedValue(Ok(mockUser)),
 };
 
 describe('UserUsecase', () => {
@@ -32,30 +38,51 @@ describe('UserUsecase', () => {
   });
 
   describe('findAll', () => {
+    let res: UsersUsecaseRepoFindAll;
+
+    beforeEach(async () => {
+      res = await usecase.findAll();
+    });
+
     it('should return empty array if no user found', async () => {
-      mockUsersUsecaseRepo.findAll.mockResolvedValueOnce([]);
+      mockUsersUsecaseRepo.findAll.mockResolvedValueOnce(Ok([]));
 
-      const result = await usecase.findAll();
-
+      res = await usecase.findAll();
+      const users = res.unwrap();
       expect(repo.findAll).toHaveBeenCalled();
-      expect(result).toBeInstanceOf(Array);
-      expect(result).toEqual([]);
+      expect(users).toBeInstanceOf(Array);
+      expect(users).toEqual([]);
     });
 
     it('should return an array of users', async () => {
-      const result = await usecase.findAll();
-
-      expect(result).toEqual(mockUsers);
+      const users = res.unwrap();
       expect(repo.findAll).toHaveBeenCalled();
+      expect(users).toEqual(mockUsers);
     });
   });
 
   describe('findOne', () => {
-    it('should return a single user', async () => {
-      const result = await usecase.findOne(1);
+    let res: UsersUsecaseRepoFindOne;
 
-      expect(result).toEqual(mockUser);
+    beforeEach(async () => {
+      res = await usecase.findOne(1);
+    });
+
+    it('should return a single user', async () => {
+      const user = res.unwrap();
+      expect(user).toEqual(mockUser);
       expect(repo.findOne).toHaveBeenCalledWith(1);
+    });
+
+    it('should throw error when user not found', async () => {
+      mockUsersUsecaseRepo.findOne.mockResolvedValueOnce(
+        Err(new UserNotFoundError()),
+      );
+
+      const res = await usecase.findOne(1);
+
+      expect(res.isErr()).toBe(true);
+      expect(res.unwrapErr()).toBeInstanceOf(UserNotFoundError);
     });
   });
 });

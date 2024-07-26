@@ -4,6 +4,11 @@ import { createRepoTestingModule } from '@testcore/utils/test-modules';
 import { TestDrizzleService } from '@testcore/utils/test-drizzle.service';
 import { USERS } from '@drizzle/schema';
 import { CreateUsersFactory } from '../users.factory';
+import {
+  UsersUsecaseRepoFindAll,
+  UsersUsecaseRepoFindOne,
+} from '../../../../src/modules/users/usecase/users.usecase.type';
+import { UserNotFoundError } from '../../../../src/modules/users/users.error';
 
 describe('UsersUsecaseRepo', () => {
   let repo: UsersUsecaseRepo;
@@ -22,25 +27,38 @@ describe('UsersUsecaseRepo', () => {
   });
 
   describe('findAll', () => {
-    let users: Array<typeof USERS.$inferSelect>;
+    let res: UsersUsecaseRepoFindAll;
 
     beforeEach(async () => {
-      users = await repo.findAll();
+      res = await repo.findAll();
     });
 
     it('should be an array', () => {
+      expect(res.isErr()).toEqual(false);
+      expect(res.isOk()).toEqual(true);
+
+      const users = res.unwrap();
+
       expect(users).toBeInstanceOf(Array);
     });
 
     it('should be empty when no user', async () => {
+      expect(res.isErr()).toEqual(false);
+      expect(res.isOk()).toEqual(true);
+
+      const users = res.unwrap();
       expect(users).toEqual([]);
     });
 
     it('should return users', async () => {
       const testUser = CreateUsersFactory.build({ name: 'bob' });
       await service.insert(USERS, testUser);
-      users = await repo.findAll();
 
+      res = await repo.findAll();
+      expect(res.isErr()).toEqual(false);
+      expect(res.isOk()).toEqual(true);
+
+      const users = res.unwrap();
       expect(users).toHaveLength(1);
       const user = users[0];
       expect(user.name).toEqual(testUser.name);
@@ -48,21 +66,27 @@ describe('UsersUsecaseRepo', () => {
   });
 
   describe('findOne', () => {
-    let user: typeof USERS.$inferSelect;
+    let res: UsersUsecaseRepoFindOne;
 
     beforeEach(async () => {
-      user = await repo.findOne(1);
+      res = await repo.findOne(1);
     });
 
-    it('should be undefined when no user', () => {
-      expect(user).toBeUndefined();
+    it('should error when no user', () => {
+      expect(res.isErr()).toEqual(true);
+      expect(res.unwrapErr()).toBeInstanceOf(UserNotFoundError);
     });
 
     it('should return user', async () => {
       const testUser = CreateUsersFactory.build({ name: 'bob' });
       const [id] = await service.insert(USERS, testUser);
-      user = await repo.findOne(id);
 
+      res = await repo.findOne(id);
+
+      expect(res.isErr()).toEqual(false);
+      expect(res.isOk()).toEqual(true);
+
+      const user = res.unwrap();
       expect(user).toBeDefined();
       expect(user.name).toEqual(testUser.name);
     });
