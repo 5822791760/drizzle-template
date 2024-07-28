@@ -1,5 +1,6 @@
 import { EventEntity } from '../../../../../core/ddd/event-entity.base';
 import { InsertUSERS } from '../../../../drizzle/schema.type';
+import { UserCreatedDomainEvent } from './event/user-created.domain-event';
 import { UserEntityProps } from './user.entity.type';
 
 export class UserEntity extends EventEntity<UserEntityProps> {
@@ -7,9 +8,18 @@ export class UserEntity extends EventEntity<UserEntityProps> {
     return null;
   }
 
-  create(createData: UserEntityProps) {
+  static create(createData: UserEntityProps): UserEntity {
     const props = createData;
-    return new UserEntity({ props });
+    props.cityId ||= null;
+
+    const user = new UserEntity({ props });
+    user.addEvent(
+      new UserCreatedDomainEvent({
+        aggregateId: user.aggregateId,
+        name: props.name,
+      }),
+    );
+    return user;
   }
 
   toDbValues(): InsertUSERS {

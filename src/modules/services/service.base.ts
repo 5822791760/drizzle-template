@@ -39,7 +39,12 @@ export abstract class ServiceBase<
           .set(entity.toDbValues())
           .where(eq(table['id'], entity.id));
       } else {
-        await this.db.insert(table).values(entity.toDbValues());
+        const [{ id }] = await this.db
+          .insert(table)
+          .values(entity.toDbValues())
+          .returning({ id: table['id'] });
+
+        entity.setId(id);
       }
 
       await entity.publishEvents(this.logger, this.evenEmitter);

@@ -30,7 +30,7 @@ export abstract class EventEntity<EntityProps> extends Entity<EntityProps> {
             event.constructor.name
           }" event published for aggregate ${this.constructor.name} : ${
             this.id
-          }`,
+          } [aggregateId: ${this.aggregateId}]`,
         );
         return eventEmitter.emitAsync(event.constructor.name, event);
       }),

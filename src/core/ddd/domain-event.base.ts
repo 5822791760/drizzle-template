@@ -1,5 +1,6 @@
 import { randomUUID } from 'crypto';
 import { RequestContextService } from '../application/context/request-context';
+import { isEmpty } from 'lodash';
 
 type DomainEventMetadata = {
   /** Timestamp when this domain event occurred */
@@ -34,6 +35,9 @@ export abstract class DomainEvent {
   public readonly metadata: DomainEventMetadata;
 
   constructor(props: DomainEventProps<unknown>) {
+    if (isEmpty(props)) {
+      throw new Error('DomainEvent props should not be empty');
+    }
     this.id = randomUUID();
     this.aggregateId = props.aggregateId;
     this.metadata = {

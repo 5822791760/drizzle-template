@@ -1,15 +1,14 @@
+import { randomUUID } from 'crypto';
 import { Err } from 'oxide.ts';
 
-export type AggregateID = number;
-
 export interface BaseEntityProps {
-  id: AggregateID;
+  id: number;
   createdAt: Date;
   updatedAt: Date;
 }
 
 export interface CreateEntityProps<T> {
-  id?: AggregateID;
+  id?: number;
   props: T;
   createdAt?: Date;
   updatedAt?: Date;
@@ -26,6 +25,7 @@ export abstract class Entity<EntityProps> {
       this.setId(id);
     }
     const now = new Date();
+    this._aggregateId = randomUUID();
     this._createdAt = createdAt || now;
     this._updatedAt = updatedAt || now;
     this.props = props;
@@ -36,17 +36,23 @@ export abstract class Entity<EntityProps> {
 
   private readonly _createdAt: Date;
 
-  private _id: AggregateID;
+  private _id: number;
+
+  private _aggregateId: string;
 
   private _updatedAt: Date;
 
-  get id(): AggregateID {
+  get id(): number {
     return this._id;
   }
 
-  private setId(id: AggregateID): this {
+  public setId(id: number): this {
     this._id = id;
     return this;
+  }
+
+  get aggregateId(): string {
+    return this._aggregateId;
   }
 
   get createdAt(): Date {
