@@ -1,6 +1,6 @@
 import { UserEntity } from '@app/modules/services/core/users/domain/users.entity';
-import { CreateUsersFactory } from '../../../users/users.factory';
-import { InsertUSERS } from '../../../../../src/modules/drizzle/schema.type';
+import { CreateUsersFactory } from '@testcore/factories/users.factory';
+import { InsertUSERS } from '@drizzle/schema.type';
 
 const mockUser = CreateUsersFactory.build();
 

@@ -2,7 +2,7 @@ import { TestingModule } from '@nestjs/testing';
 import { createDrizzleRepoTestingModule } from '@testcore/utils/test-modules';
 import { TestDrizzleService } from '@testcore/utils/test-drizzle.service';
 import { CITIES, USERS } from '@drizzle/schema';
-import { CreateUsersFactory } from './users.factory';
+import { CreateUsersFactory } from '../../core/factories/users.factory';
 import { UserNotFoundError } from '@app/modules/users/users.error';
 import { CreateCityFactory } from '../cities/cities.factory';
 import { UsersRepo } from '../../../src/modules/users/repo/users.repo';

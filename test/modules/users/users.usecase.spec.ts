@@ -1,12 +1,12 @@
 import { UsersUsecase } from '@app/modules/users/usecase/users.usecase';
 import { TestingModule } from '@nestjs/testing';
 import { createMockTestingModule } from '@testcore/utils/test-modules';
-import { UsersFactory } from './users.factory';
+import { UsersFactory } from '@testcore/factories/users.factory';
 import { Err, Ok } from 'oxide.ts';
 import { UserNotFoundError } from '@app/modules/users/users.error';
 import { CitiesFactory } from '../cities/cities.factory';
 import { UsersUsecaseRepoFindOne } from '@app/modules/users/repo/users.repo.type';
-import { UsersRepo } from '../../../src/modules/users/repo/users.repo';
+import { UsersRepo } from '@app/modules/users/repo/users.repo';
 
 const mockUsersUsecaseRepo = {
   findAll: jest.fn(),

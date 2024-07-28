@@ -1,7 +1,7 @@
 import { UsersService } from '@services/core/users/users.service';
 import { createServiceTestingModule } from '@testcore/utils/test-modules';
 import { TestDrizzleService } from '@testcore/utils/test-drizzle.service';
-import { CreateUsersFactory } from '../../../users/users.factory';
+import { CreateUsersFactory } from '@testcore/factories/users.factory';
 import { USERS } from '@drizzle/schema';
 import { UserEntity } from '@services/core/users/domain/users.entity';
 import { UserNotFoundError } from '@app/modules/users/users.error';

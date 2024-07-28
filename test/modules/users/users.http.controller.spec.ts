@@ -2,10 +2,10 @@ import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { UsersUsecase } from '@app/modules/users/usecase/users.usecase';
 import { createControllerTestingModule } from '../../core/utils/test-modules';
-import { UsersHttpController } from '../../../src/modules/users/controller/users.http.controller';
-import { UsersFactory } from './users.factory';
+import { UsersHttpController } from '@app/modules/users/controller/users.http.controller';
+import { UsersFactory } from '@testcore/factories/users.factory';
 import { Err, Ok } from 'oxide.ts';
-import { UserNotFoundError } from '../../../src/modules/users/users.error';
+import { UserNotFoundError } from '@app/modules/users/users.error';
 
 const mockUser = UsersFactory.build();
 const mockUsers = UsersFactory.buildList(2);
