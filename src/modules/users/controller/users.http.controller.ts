@@ -1,4 +1,10 @@
-import { BadRequestException, Controller, Get, Param } from '@nestjs/common';
+import {
+  BadRequestException,
+  Controller,
+  Get,
+  InternalServerErrorException,
+  Param,
+} from '@nestjs/common';
 import { UsersUsecase } from '../usecase/users.usecase';
 import { match } from 'oxide.ts';
 import { UserNotFoundError } from '../users.error';
@@ -31,7 +37,7 @@ export class UsersHttpController {
           throw new BadRequestException(err.message);
         }
 
-        return null;
+        throw new InternalServerErrorException(err['message']);
       },
     });
   }

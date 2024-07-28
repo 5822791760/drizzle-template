@@ -21,13 +21,14 @@ export abstract class Entity<EntityProps> {
     updatedAt,
     props,
   }: CreateEntityProps<EntityProps>) {
-    if (id) {
-      this.setId(id);
-    }
     const now = new Date();
+
+    this.setId(id || null);
     this._aggregateId = randomUUID();
+
     this._createdAt = createdAt || now;
     this._updatedAt = updatedAt || now;
+
     this.props = props;
     this.validate();
   }
@@ -42,7 +43,7 @@ export abstract class Entity<EntityProps> {
 
   private _updatedAt: Date;
 
-  get id(): number {
+  get id(): number | null {
     return this._id;
   }
 

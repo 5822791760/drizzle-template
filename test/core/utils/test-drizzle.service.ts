@@ -4,7 +4,7 @@ import { Pool, PoolClient } from 'pg';
 import { drizzle, NodePgDatabase } from 'drizzle-orm/node-postgres';
 import { migrate } from 'drizzle-orm/node-postgres/migrator';
 import testConfig from '../config/test-config';
-import { sql } from 'drizzle-orm';
+import { getTableName, sql, SQLWrapper } from 'drizzle-orm';
 import { PgInsertValue, PgTable } from 'drizzle-orm/pg-core';
 
 @Injectable()
@@ -55,6 +55,11 @@ export class TestDrizzleService {
     return res.map((r) => r.id);
   }
 
+  async execute(sql: SQLWrapper) {
+    const db = await this.getDrizzle();
+    await db.execute(sql);
+  }
+
   async cleanDb() {
     const db = await this.getDrizzle();
 
@@ -62,6 +67,20 @@ export class TestDrizzleService {
       Object.keys(db._.tableNamesMap).map(async (table) => {
         if (table) {
           await db.execute(sql`TRUNCATE TABLE ${sql.raw(table)} CASCADE;`);
+        }
+      }),
+    );
+  }
+
+  async cleanTables(...tables: Array<PgTable>) {
+    const db = await this.getDrizzle();
+
+    await Promise.all(
+      tables.map(async (table) => {
+        if (table) {
+          await db.execute(
+            sql`TRUNCATE TABLE ${sql.raw(getTableName(table))} CASCADE;`,
+          );
         }
       }),
     );

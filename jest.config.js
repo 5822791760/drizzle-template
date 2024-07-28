@@ -11,6 +11,8 @@ module.exports = {
     'src/modules/**/*.service.ts',
     'src/modules/**/*.usecase.ts',
     'src/modules/**/*.repo.ts',
+    'src/modules/**/*.entity.ts',
+    'src/modules/**/*.service.ts',
   ],
   coveragePathIgnorePatterns: ['src/modules/drizzle'],
 };

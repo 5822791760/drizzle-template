@@ -27,7 +27,7 @@ export class RequestContextService {
   }
 
   static getRequestId(): string {
-    return this.getContext().requestId;
+    return this.getContext()?.requestId;
   }
 
   static getTransactionConnection(): Transaction | undefined {

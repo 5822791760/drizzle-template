@@ -26,7 +26,7 @@ export class UserEntity extends EventEntity<UserEntityProps> {
     const props = this.getProps();
     return {
       name: props.name,
-      cityId: props.cityId || null,
+      cityId: props.cityId,
     };
   }
 }

@@ -90,5 +90,17 @@ describe('UsersHttpController', () => {
           expect(body.statusCode).toBe(400);
         });
     });
+
+    it('should return 500 if theres an unexpected error', async () => {
+      usecase.findOne.mockResolvedValue(Err(new Error('Unexpected')));
+
+      return request(app.getHttpServer())
+        .get('/users/1')
+        .expect(500)
+        .expect(({ body }) => {
+          expect(body.statusCode).toBe(500);
+          expect(body.message).toBe('Unexpected');
+        });
+    });
   });
 });
