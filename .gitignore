@@ -36,3 +36,4 @@ lerna-debug.log*
 !.vscode/extensions.json
 
 _docker_volumes
+.nestjs_repl_history

@@ -1,14 +1,19 @@
 import { Test } from '@nestjs/testing';
-import { InjectionToken, Provider, Type } from '@nestjs/common';
+import { Logger, Provider, Type, ValueProvider } from '@nestjs/common';
 import { DRIZZLE_ORM } from '@app/core/constants/db.constants';
 import { TestDrizzleService } from './test-drizzle.service';
+import { LOGGERS_SERVICE } from '../../../src/modules/services/sub/loggers/loggers.di-tokens';
 
-export async function createRepoTestingModule(repoProvider: Provider) {
+export async function createDrizzleRepoTestingModule(repoProvider: Provider) {
   return Test.createTestingModule({
     imports: [],
     providers: [
       repoProvider,
       TestDrizzleService,
+      {
+        provide: LOGGERS_SERVICE,
+        useClass: Logger,
+      },
       {
         provide: DRIZZLE_ORM,
         useFactory: async (drizzleService: TestDrizzleService) => {
@@ -28,35 +33,22 @@ export async function createRepoTestingModule(repoProvider: Provider) {
   }).compile();
 }
 
-export async function createServiceTestingModule<T>(
+export async function createMockTestingModule(
   serviceProvider: Provider,
-  token: InjectionToken,
-  mockRepo: T,
+  mockProviders: Array<ValueProvider>,
 ) {
   return Test.createTestingModule({
-    providers: [
-      serviceProvider,
-      {
-        provide: token,
-        useValue: mockRepo,
-      },
-    ],
+    providers: [serviceProvider, ...mockProviders],
   }).compile();
 }
 
-export async function createControllerTestingModule<T>(
+export async function createControllerTestingModule(
   controller: Type<any>,
-  token: InjectionToken,
-  mockUsecase: T,
+  mockProviders: Array<ValueProvider>,
 ) {
   const module = await Test.createTestingModule({
     controllers: [controller],
-    providers: [
-      {
-        provide: token,
-        useValue: mockUsecase,
-      },
-    ],
+    providers: mockProviders,
   }).compile();
 
   const nestApp = module.createNestApplication();

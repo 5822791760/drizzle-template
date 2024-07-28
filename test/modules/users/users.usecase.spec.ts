@@ -1,12 +1,12 @@
 import { UsersUsecase } from '@app/modules/users/usecase/users.usecase';
 import { TestingModule } from '@nestjs/testing';
-import { createServiceTestingModule } from '@testcore/utils/test-modules';
-import { UsersUsecaseRepo } from '@app/modules/users/usecase/users.usecase.repo';
-import { UsersFactory } from '../users.factory';
+import { createMockTestingModule } from '@testcore/utils/test-modules';
+import { UsersFactory } from './users.factory';
 import { Err, Ok } from 'oxide.ts';
 import { UserNotFoundError } from '@app/modules/users/users.error';
-import { CitiesFactory } from '../../cities/cities.factory';
-import { UsersUsecaseRepoFindOne } from '../../../../src/modules/users/user.type';
+import { CitiesFactory } from '../cities/cities.factory';
+import { UsersUsecaseRepoFindOne } from '@app/modules/users/repo/users.repo.type';
+import { UsersRepo } from '../../../src/modules/users/repo/users.repo';
 
 const mockUsersUsecaseRepo = {
   findAll: jest.fn(),
@@ -15,17 +15,18 @@ const mockUsersUsecaseRepo = {
 
 describe('UserUsecase', () => {
   let usecase: UsersUsecase;
-  let repo: UsersUsecaseRepo;
+  let repo: typeof mockUsersUsecaseRepo;
 
   beforeAll(async () => {
-    const module: TestingModule = await createServiceTestingModule(
-      UsersUsecase,
-      UsersUsecaseRepo,
-      mockUsersUsecaseRepo,
-    );
+    const module: TestingModule = await createMockTestingModule(UsersUsecase, [
+      {
+        provide: UsersRepo,
+        useValue: mockUsersUsecaseRepo,
+      },
+    ]);
 
     usecase = module.get(UsersUsecase);
-    repo = module.get(UsersUsecaseRepo);
+    repo = module.get(UsersRepo);
   });
 
   it('should be defined', () => {
@@ -34,7 +35,7 @@ describe('UserUsecase', () => {
 
   describe('findAll', () => {
     it('should return empty array if no user found', async () => {
-      mockUsersUsecaseRepo.findAll.mockResolvedValue(Ok([]));
+      repo.findAll.mockResolvedValue(Ok([]));
 
       const res = await usecase.findAll();
       expect(res.isErr()).toBe(false);
@@ -47,7 +48,7 @@ describe('UserUsecase', () => {
 
     it('should return an array of users', async () => {
       const mockUsers = UsersFactory.buildList(2);
-      mockUsersUsecaseRepo.findAll.mockResolvedValue(Ok(mockUsers));
+      repo.findAll.mockResolvedValue(Ok(mockUsers));
 
       const res = await usecase.findAll();
 
@@ -72,7 +73,7 @@ describe('UserUsecase', () => {
           name: mockCity.name,
         },
       };
-      mockUsersUsecaseRepo.findOne.mockResolvedValue(Ok(mockData));
+      repo.findOne.mockResolvedValue(Ok(mockData));
 
       const res = await usecase.findOne(id);
 
@@ -83,9 +84,7 @@ describe('UserUsecase', () => {
     });
 
     it('should throw error when user not found', async () => {
-      mockUsersUsecaseRepo.findOne.mockResolvedValue(
-        Err(new UserNotFoundError()),
-      );
+      repo.findOne.mockResolvedValue(Err(new UserNotFoundError()));
 
       const res = await usecase.findOne(id);
 

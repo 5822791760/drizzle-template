@@ -1,21 +1,21 @@
 import { TestingModule } from '@nestjs/testing';
-import { UsersUsecaseRepo } from '@app/modules/users/usecase/users.usecase.repo';
-import { createRepoTestingModule } from '@testcore/utils/test-modules';
+import { createDrizzleRepoTestingModule } from '@testcore/utils/test-modules';
 import { TestDrizzleService } from '@testcore/utils/test-drizzle.service';
 import { CITIES, USERS } from '@drizzle/schema';
-import { CreateUsersFactory } from '../users.factory';
+import { CreateUsersFactory } from './users.factory';
 import { UserNotFoundError } from '@app/modules/users/users.error';
-import { CreateCityFactory } from '../../cities/cities.factory';
+import { CreateCityFactory } from '../cities/cities.factory';
+import { UsersRepo } from '../../../src/modules/users/repo/users.repo';
 
-describe('UsersUsecaseRepo', () => {
-  let repo: UsersUsecaseRepo;
+describe('UsersRepo', () => {
+  let repo: UsersRepo;
   let service: TestDrizzleService;
 
   beforeAll(async () => {
     const module: TestingModule =
-      await createRepoTestingModule(UsersUsecaseRepo);
+      await createDrizzleRepoTestingModule(UsersRepo);
 
-    repo = module.get(UsersUsecaseRepo);
+    repo = module.get(UsersRepo);
     service = module.get(TestDrizzleService);
   });
 

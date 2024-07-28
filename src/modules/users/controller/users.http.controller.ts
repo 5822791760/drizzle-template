@@ -14,6 +14,7 @@ export class UsersHttpController {
   @Get()
   async findAll(): Promise<Array<FindAllUserHttpResponse>> {
     const res = await this.usersUsecase.findAll();
+
     return match(res, {
       Ok: (users) => users,
     });
@@ -22,6 +23,7 @@ export class UsersHttpController {
   @Get(':id')
   async findOne(@Param('id') id: string): Promise<FindOneUserHttpResponse> {
     const res = await this.usersUsecase.findOne(+id);
+
     return match(res, {
       Ok: (users) => users,
       Err: (err) => {

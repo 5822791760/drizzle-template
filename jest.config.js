@@ -6,4 +6,11 @@ module.exports = {
   testEnvironment: 'node',
   moduleNameMapper: pathsToModuleNameMapper(compilerOptions.paths),
   modulePaths: ['<rootDir>'],
+  collectCoverageFrom: [
+    'src/modules/**/*.controller.ts',
+    'src/modules/**/*.service.ts',
+    'src/modules/**/*.usecase.ts',
+    'src/modules/**/*.repo.ts',
+  ],
+  coveragePathIgnorePatterns: ['src/modules/drizzle'],
 };

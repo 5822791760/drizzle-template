@@ -1,18 +1,13 @@
 import { Module, Provider } from '@nestjs/common';
 import { UsersHttpController } from './controller/users.http.controller';
-import { UsersService } from './service/users.service';
-import { UsersUsecaseRepo } from './usecase/users.usecase.repo';
+import { UsersRepo } from './repo/users.repo';
 import { UsersUsecase } from './usecase/users.usecase';
-import { UsersServiceRepo } from './service/users.service.repo';
 
-const usecase: ReadonlyArray<Provider> = [UsersUsecaseRepo, UsersUsecase];
-
-const service: ReadonlyArray<Provider> = [UsersServiceRepo, UsersService];
+const usecase: ReadonlyArray<Provider> = [UsersRepo, UsersUsecase];
 
 @Module({
   controllers: [UsersHttpController],
-  imports: [],
-  providers: [...usecase, ...service],
-  exports: [UsersService],
+  providers: [...usecase],
+  exports: [],
 })
 export class UsersModule {}

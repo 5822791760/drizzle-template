@@ -1,16 +1,16 @@
-import { Inject, Injectable } from '@nestjs/common';
-import { DRIZZLE_ORM } from '@app/core/constants/db.constants';
-import { DrizzleDb } from '../../../core/interfaces/drizzle.interfaces';
+import { Injectable } from '@nestjs/common';
 import { CITIES, USERS } from '../../drizzle/schema';
 import { eq } from 'drizzle-orm';
 import { Err, Ok, Result } from 'oxide.ts';
-import { UsersUsecaseRepoFindOne, UsersUsecaseRepoFindAll } from '../user.type';
+import {
+  UsersUsecaseRepoFindOne,
+  UsersUsecaseRepoFindAll,
+} from './users.repo.type';
 import { UserNotFoundError } from '../users.error';
+import { DrizzleRepoBase } from '../../drizzle/drizzle.base';
 
 @Injectable()
-export class UsersUsecaseRepo {
-  constructor(@Inject(DRIZZLE_ORM) private db: DrizzleDb) {}
-
+export class UsersRepo extends DrizzleRepoBase {
   async findAll(): Promise<Result<UsersUsecaseRepoFindAll, null>> {
     const data = await this.db
       .select({

@@ -1,11 +1,11 @@
 import { INestApplication } from '@nestjs/common';
 import * as request from 'supertest';
 import { UsersUsecase } from '@app/modules/users/usecase/users.usecase';
-import { createControllerTestingModule } from '../../../core/utils/test-modules';
-import { UsersHttpController } from '../../../../src/modules/users/controller/users.http.controller';
-import { UsersFactory } from '../users.factory';
+import { createControllerTestingModule } from '../../core/utils/test-modules';
+import { UsersHttpController } from '../../../src/modules/users/controller/users.http.controller';
+import { UsersFactory } from './users.factory';
 import { Err, Ok } from 'oxide.ts';
-import { UserNotFoundError } from '../../../../src/modules/users/users.error';
+import { UserNotFoundError } from '../../../src/modules/users/users.error';
 
 const mockUser = UsersFactory.build();
 const mockUsers = UsersFactory.buildList(2);
@@ -17,13 +17,17 @@ const mockUsersUsecase = {
 
 describe('UsersHttpController', () => {
   let app: INestApplication;
-  let usecase: UsersUsecase;
+  let usecase: typeof mockUsersUsecase;
 
   beforeAll(async () => {
     const { module, nestApp } = await createControllerTestingModule(
       UsersHttpController,
-      UsersUsecase,
-      mockUsersUsecase,
+      [
+        {
+          provide: UsersUsecase,
+          useValue: mockUsersUsecase,
+        },
+      ],
     );
 
     app = nestApp;
@@ -36,7 +40,7 @@ describe('UsersHttpController', () => {
 
   describe('GET /users', () => {
     it('should return an array of users', async () => {
-      mockUsersUsecase.findAll.mockResolvedValue(Ok(mockUsers));
+      usecase.findAll.mockResolvedValue(Ok(mockUsers));
 
       return request(app.getHttpServer())
         .get('/users')
@@ -58,7 +62,7 @@ describe('UsersHttpController', () => {
 
   describe('GET /users/:id', () => {
     it('should return a single user', async () => {
-      mockUsersUsecase.findOne.mockResolvedValue(Ok(mockUser));
+      usecase.findOne.mockResolvedValue(Ok(mockUser));
 
       return request(app.getHttpServer())
         .get('/users/1')
@@ -77,7 +81,7 @@ describe('UsersHttpController', () => {
     });
 
     it('should return 400 if user not found', async () => {
-      mockUsersUsecase.findOne.mockResolvedValue(Err(new UserNotFoundError()));
+      usecase.findOne.mockResolvedValue(Err(new UserNotFoundError()));
 
       return request(app.getHttpServer())
         .get('/users/1')
